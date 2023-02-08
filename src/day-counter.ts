@@ -1,17 +1,15 @@
-
 type DateRange = {
   startDate: Date;
   endDate: Date;
 };
 
 export default class DayCounter {
-
- //Returns the number of weekdays between first date and second date (first and second exclusive)
-  getWeekdaysBetweenTwoDates(firstDate: Date, secondDate: Date): number {
+  //Returns the number of weekdays between first date and second date (first and second exclusive)
+  getWeekdaysBetweenTwoDatesCount(firstDate: Date, secondDate: Date): number {
     let startDate = firstDate;
     let endDate = secondDate;
-    if(endDate< startDate){
-        return 0;
+    if (endDate < startDate) {
+      return 0;
     }
     const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(
       startDate,
@@ -19,20 +17,51 @@ export default class DayCounter {
     );
     startDate = normaliseDateRange.startDate;
     endDate = normaliseDateRange.endDate;
-    return this.calculateWeekDays(startDate, endDate);
+    return this.getListOfWeekDaysBetweenTwoDates(startDate, endDate).length;
   }
 
-  private calculateWeekDays(startDate :Date, endDate :Date): number{
+  getBusinessDaysBetweenTwoDatesCount(
+    firstDate: Date,
+    secondDate: Date,
+    publicHolidays: Date[]
+  ): number {
+    const weekDates = this.getListOfWeekDaysBetweenTwoDates(
+      firstDate,
+      secondDate
+    );
+    // const businessDayList = weekDates.filter((weekday) =>
+    //   publicHolidays.some((holiday) => holiday.getTime() !== weekday.getTime())
+    // );
+    // let businessDayList =[];
+    // publicHolidays.forEach(holiday=>{
+    //     businessDayList = weekDates.filter(weekday=>{
+    //         weekday.getTime() !== holiday.getTime()
+    //     })
+    // });
+    
+    const businessDaysList = weekDates.filter((el) => {
+        return publicHolidays.some((f) => {
+          return f.getTime() !== el.getTime();
+        });
+      });
+      
+
+    return businessDaysList.length;
+  }
+
+  private getListOfWeekDaysBetweenTwoDates(
+    startDate: Date,
+    endDate: Date
+  ): Date[] {
+    const weekdaysList = [];
     let tempDate = this.addDaystoGivenDate(startDate, 1);
-    let counter = 0;
     while (tempDate < endDate) {
       if (this.isWeekDay(tempDate)) {
-        counter++;
+        weekdaysList.push(new Date(tempDate));
       }
       tempDate = this.addDaystoGivenDate(tempDate, 1);
     }
-    return counter;
-
+    return weekdaysList;
   }
 
   private isWeekDay(day: Date): boolean {
@@ -59,13 +88,5 @@ export default class DayCounter {
     }
 
     return { startDate: startDate, endDate: endDate };
-  }
-  getBusinessDaysBetweenTwoDates(
-    firstDate: Date,
-    secondDate: Date,
-    publicHolidays: Date[]
-  ): number {
-    // todo
-    return -1;
   }
 }
