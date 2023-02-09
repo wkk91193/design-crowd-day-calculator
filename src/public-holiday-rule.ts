@@ -1,3 +1,6 @@
+import DayCounter from './day-counter';
+import dayCounter from './day-counter';
+
 export class PublicHolidayRule {
   private dayOfWeek: DayOfWeek = DayOfWeek.Sunday;
   private occurrence: Occurrence = Occurrence.First;
@@ -6,7 +9,7 @@ export class PublicHolidayRule {
   private shouldDelay: boolean = false;
 
   //fixed day public holiday ,and should delay if it falls on a weekend
-  public static fromFirstTwoRules(
+  public static fromFixedPublicHolidayAndAllowedToDelayRule(
     month: number,
     day: number,
     shouldDelay: boolean
@@ -17,7 +20,7 @@ export class PublicHolidayRule {
     if (month < 1 || month > 12) {
       throw new Error('Invalid month');
     }
-    if (Number.isNaN(Date.parse(`2013-${month}-${day}`))) {
+    if (Number.isNaN(Date.parse(`2013/${month}/${day}`))) {
       throw new Error('Invalid month and date combination');
     }
     const publicHolidayRule = new PublicHolidayRule();
@@ -28,7 +31,7 @@ export class PublicHolidayRule {
   }
 
   //occurrence of day of a week in specific month
-  public static thirdRule(
+  public static fromOccurrenceOfADayOfASpecificMonth(
     dayOfWeek: DayOfWeek,
     occurrence: Occurrence,
     month: number
@@ -49,40 +52,45 @@ export class PublicHolidayRule {
     occurence: Occurrence,
     dayOfWeek: DayOfWeek
   ): Date {
-     //January-0, December-11
-    let firstDayOfTheMonth = new Date(`${year}-${month}-1`);
+    //January-0, December-11
+    let firstDayOfTheMonth = new Date(`${year}/${month}/01`);
     let firstOccurenceOfDay =
-      firstDayOfTheMonth.getUTCDay() === dayOfWeek.valueOf()
+      firstDayOfTheMonth.getDay() === dayOfWeek.valueOf()
         ? firstDayOfTheMonth
-        : new Date(
-            firstDayOfTheMonth.setUTCDate(
-              Math.abs(
-                this.dayOfWeek.valueOf() - firstDayOfTheMonth.getUTCDay()
-              )
-            )
+        : DayCounter.addDaystoGivenDate(
+            firstDayOfTheMonth,
+            Math.abs(this.dayOfWeek.valueOf() - firstDayOfTheMonth.getDay())
           );
+    console.log(DayCounter.addDaystoGivenDate(firstDayOfTheMonth, (7 * occurence.valueOf())));
+    return DayCounter.addDaystoGivenDate(firstDayOfTheMonth, (7 * occurence.valueOf()))
     return new Date(firstOccurenceOfDay.setUTCDate(7 * occurence.valueOf()));
   }
 
   public getPublicHolidayDateFromYear(year: number): Date {
     //if day of week occurence rule
-    if ((this.day === 0)) {
-      return this.getOccurenceOfDayInMonth(year, this.month,this.occurrence, this.dayOfWeek);
-    }
-    else{
-    //fixed or shouldDelay rule
-        let dateString =`${year}-${this.month}-${this.day}`;
-        let date = new Date(`${year}-${this.month}-${this.day}`);
-        let testDate =new Date('2013-10-08');
-        if(this.shouldDelay){
-            //if date falls on weekend
-            if(date.getUTCDay()===DayOfWeek.Saturday || date.getUTCDay() === DayOfWeek.Sunday ){
-                const daysUntilMonday = ((DayOfWeek.Monday - date.getUTCDay()+7))%7;
-                date = new Date(date.setUTCDate(daysUntilMonday));
-
-            }
+    if (this.day === 0) {
+      return this.getOccurenceOfDayInMonth(
+        year,
+        this.month,
+        this.occurrence,
+        this.dayOfWeek
+      );
+    } else {
+      //fixed or shouldDelay rule
+      let date = new Date(`${year}/${this.month}/${this.day}`);
+      if (this.shouldDelay) {
+        //if date falls on weekend
+        console.log(date.getDay());
+        console.log(DayOfWeek.Saturday);
+        if (
+          date.getDay() === DayOfWeek.Saturday ||
+          date.getDay() === DayOfWeek.Sunday
+        ) {
+          const daysUntilMonday = (DayOfWeek.Monday - date.getDay() + 7) % 7;
+          date = dayCounter.addDaystoGivenDate(date, daysUntilMonday);
         }
-        return date;
+      }
+      return date;
     }
   }
 }
@@ -102,4 +110,5 @@ export enum Occurrence {
   Second = 1,
   Third = 2,
   Fourth = 3,
+  Fifth = 4,
 }

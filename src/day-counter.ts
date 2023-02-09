@@ -97,24 +97,24 @@ export default class DayCounter {
     endDate: Date
   ): number[] {
     const weekdaysList = [];
-    let tempDate = this.addDaystoGivenDate(startDate, 1);
+    let tempDate = DayCounter.addDaystoGivenDate(startDate, 1);
     while (tempDate < endDate) {
       if (this.isWeekDay(tempDate)) {
         weekdaysList.push(new Date(tempDate).getTime());
       }
-      tempDate = this.addDaystoGivenDate(tempDate, 1);
+      tempDate = DayCounter.addDaystoGivenDate(tempDate, 1);
     }
     return weekdaysList;
   }
 
   private isWeekDay(day: Date): boolean {
-    if (day.getUTCDay() >= 1 && day.getUTCDay() <= 5) {
+    if (day.getDay() >= 1 && day.getDay() <= 5) {
       return true;
     }
     return false;
   }
 
-  private addDaystoGivenDate(date: Date, numberOfDays: number): Date {
+  public static addDaystoGivenDate(date: Date, numberOfDays: number): Date {
     const newDate = new Date(date);
     return new Date(newDate.setUTCDate(newDate.getUTCDate() + numberOfDays));
   }
