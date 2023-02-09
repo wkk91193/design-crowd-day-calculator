@@ -1,3 +1,5 @@
+import { PublicHolidayRule } from './public-holiday-rule';
+
 type DateRange = {
   startDate: Date;
   endDate: Date;
@@ -5,7 +7,7 @@ type DateRange = {
 
 export default class DayCounter {
   //Returns the number of weekdays between first date and second date (first and second exclusive)
-  getWeekdaysBetweenTwoDatesCount(firstDate: Date, secondDate: Date): number {
+  getCountOfWeekdaysBetweenTwoDates(firstDate: Date, secondDate: Date): number {
     let startDate = firstDate;
     let endDate = secondDate;
     if (endDate < startDate) {
@@ -20,44 +22,85 @@ export default class DayCounter {
     return this.getListOfWeekDaysBetweenTwoDates(startDate, endDate).length;
   }
 
-  getBusinessDaysBetweenTwoDatesCount(
+  getCountOfBusinessDaysBetweenTwoDates(
     firstDate: Date,
     secondDate: Date,
     publicHolidays: Date[]
   ): number {
-    const weekDates = this.getListOfWeekDaysBetweenTwoDates(
-      firstDate,
-      secondDate
+    let startDate = firstDate;
+    let endDate = secondDate;
+    if (endDate < startDate) {
+      return 0;
+    }
+    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(
+      startDate,
+      endDate
     );
-    // const businessDayList = weekDates.filter((weekday) =>
-    //   publicHolidays.some((holiday) => holiday.getTime() !== weekday.getTime())
-    // );
-    // let businessDayList =[];
-    // publicHolidays.forEach(holiday=>{
-    //     businessDayList = weekDates.filter(weekday=>{
-    //         weekday.getTime() !== holiday.getTime()
-    //     })
-    // });
+    startDate = normaliseDateRange.startDate;
+    endDate = normaliseDateRange.endDate;
     
-    const businessDaysList = weekDates.filter((el) => {
-        return publicHolidays.some((f) => {
-          return f.getTime() !== el.getTime();
-        });
-      });
-      
+    const weekDays = this.getListOfWeekDaysBetweenTwoDates(
+      startDate,
+      endDate
+    );
+    const publicHolidaysMilliseconds = publicHolidays.map((holiday) =>
+      holiday.getTime()
+    );
+    const businessDaysList = weekDays.filter((weekDay) => {
+      return !publicHolidaysMilliseconds.includes(weekDay);
+    });
+    return businessDaysList.length;
+  }
 
+  getCountOfBusinessDaysBetweenTwoDatesForCustomRules(
+    firstDate: Date,
+    secondDate: Date,
+    publicHolidays: PublicHolidayRule[]
+  ): number {
+    let startDate = firstDate;
+    let endDate = secondDate;
+
+    if (endDate < startDate) {
+      return 0;
+    }
+    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(
+      startDate,
+      endDate
+    );
+    startDate = normaliseDateRange.startDate;
+    endDate = normaliseDateRange.endDate;
+
+    let weekDays = this.getListOfWeekDaysBetweenTwoDates(startDate, endDate);
+
+    let publicHolidayDateList: Date[] = [];
+    while (startDate.getUTCFullYear() <= endDate.getUTCFullYear()) {
+      //get holiday list for each year
+      const yearHolidayList = publicHolidays.map((holiday) =>
+        holiday.getPublicHolidayDateFromYear(startDate.getUTCFullYear())
+      );
+      publicHolidayDateList = publicHolidayDateList.concat(yearHolidayList);
+      startDate = new Date(
+        startDate.setUTCFullYear(startDate.getUTCFullYear() + 1)
+      );
+    }
+    let publicHolidaysDateListinMilliseconds = publicHolidayDateList.map(
+      (holiday) => holiday.getTime()
+    );
+    const businessDaysList = weekDays.filter((weekDay) => {
+      return !publicHolidaysDateListinMilliseconds.includes(weekDay);
+    });
     return businessDaysList.length;
   }
 
   private getListOfWeekDaysBetweenTwoDates(
     startDate: Date,
     endDate: Date
-  ): Date[] {
+  ): number[] {
     const weekdaysList = [];
     let tempDate = this.addDaystoGivenDate(startDate, 1);
     while (tempDate < endDate) {
       if (this.isWeekDay(tempDate)) {
-        weekdaysList.push(new Date(tempDate));
+        weekdaysList.push(new Date(tempDate).getTime());
       }
       tempDate = this.addDaystoGivenDate(tempDate, 1);
     }
@@ -72,7 +115,8 @@ export default class DayCounter {
   }
 
   private addDaystoGivenDate(date: Date, numberOfDays: number): Date {
-    return new Date(date.setUTCDate(date.getUTCDate() + numberOfDays));
+    const newDate = new Date(date);
+    return new Date(newDate.setUTCDate(newDate.getUTCDate() + numberOfDays));
   }
 
   private getNormalisedDatesForDaylightSavings(
