@@ -1,4 +1,4 @@
-import { PublicHolidayRule } from './public-holiday-rule';
+import { PublicHolidayRule } from '../models/public-holiday-rule';
 
 type DateRange = {
   startDate: Date;
@@ -13,39 +13,24 @@ export default class DayCounter {
     if (endDate < startDate) {
       return 0;
     }
-    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(
-      startDate,
-      endDate
-    );
+    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(startDate, endDate);
     startDate = normaliseDateRange.startDate;
     endDate = normaliseDateRange.endDate;
     return this.getListOfWeekDaysBetweenTwoDates(startDate, endDate).length;
   }
 
-  getCountOfBusinessDaysBetweenTwoDates(
-    firstDate: Date,
-    secondDate: Date,
-    publicHolidays: Date[]
-  ): number {
+  getCountOfBusinessDaysBetweenTwoDates(firstDate: Date, secondDate: Date, publicHolidays: Date[]): number {
     let startDate = firstDate;
     let endDate = secondDate;
     if (endDate < startDate) {
       return 0;
     }
-    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(
-      startDate,
-      endDate
-    );
+    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(startDate, endDate);
     startDate = normaliseDateRange.startDate;
     endDate = normaliseDateRange.endDate;
-    
-    const weekDays = this.getListOfWeekDaysBetweenTwoDates(
-      startDate,
-      endDate
-    );
-    const publicHolidaysMilliseconds = publicHolidays.map((holiday) =>
-      holiday.getTime()
-    );
+
+    const weekDays = this.getListOfWeekDaysBetweenTwoDates(startDate, endDate);
+    const publicHolidaysMilliseconds = publicHolidays.map((holiday) => holiday.getTime());
     const businessDaysList = weekDays.filter((weekDay) => {
       return !publicHolidaysMilliseconds.includes(weekDay);
     });
@@ -63,10 +48,7 @@ export default class DayCounter {
     if (endDate < startDate) {
       return 0;
     }
-    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(
-      startDate,
-      endDate
-    );
+    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(startDate, endDate);
     startDate = normaliseDateRange.startDate;
     endDate = normaliseDateRange.endDate;
 
@@ -79,23 +61,16 @@ export default class DayCounter {
         holiday.getPublicHolidayDateFromYear(startDate.getUTCFullYear())
       );
       publicHolidayDateList = publicHolidayDateList.concat(yearHolidayList);
-      startDate = new Date(
-        startDate.setUTCFullYear(startDate.getUTCFullYear() + 1)
-      );
+      startDate = new Date(startDate.setUTCFullYear(startDate.getUTCFullYear() + 1));
     }
-    let publicHolidaysDateListinMilliseconds = publicHolidayDateList.map(
-      (holiday) => holiday.getTime()
-    );
+    let publicHolidaysDateListinMilliseconds = publicHolidayDateList.map((holiday) => holiday.getTime());
     const businessDaysList = weekDays.filter((weekDay) => {
       return !publicHolidaysDateListinMilliseconds.includes(weekDay);
     });
     return businessDaysList.length;
   }
 
-  private getListOfWeekDaysBetweenTwoDates(
-    startDate: Date,
-    endDate: Date
-  ): number[] {
+  private getListOfWeekDaysBetweenTwoDates(startDate: Date, endDate: Date): number[] {
     const weekdaysList = [];
     let tempDate = DayCounter.addDaystoGivenDate(startDate, 1);
     while (tempDate < endDate) {
@@ -119,12 +94,8 @@ export default class DayCounter {
     return new Date(newDate.setUTCDate(newDate.getUTCDate() + numberOfDays));
   }
 
-  private getNormalisedDatesForDaylightSavings(
-    startDate: Date,
-    endDate: Date
-  ): DateRange {
-    let timezoneDiff =
-      endDate.getTimezoneOffset() - startDate.getTimezoneOffset();
+  private getNormalisedDatesForDaylightSavings(startDate: Date, endDate: Date): DateRange {
+    let timezoneDiff = endDate.getTimezoneOffset() - startDate.getTimezoneOffset();
     if (timezoneDiff != 0) {
       // Handle daylight saving time difference between two dates.
       startDate.setMinutes(startDate.getMinutes() + timezoneDiff);

@@ -1,5 +1,5 @@
-const start = async() :Promise<void> =>{
+const start = async (): Promise<void> => {
   console.log('Hello world!');
-}
+};
 
 start();

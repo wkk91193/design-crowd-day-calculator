@@ -1,0 +1,10 @@
+# ignore artifacts:
+build
+coverage
+
+# ingore yaml files:
+*.yaml
+*.yml
+
+# ignore json files in test fixture directories:
+**/tests/fixtures/*.json
