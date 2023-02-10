@@ -1,5 +1,5 @@
-import DayCounter from '../services/day-counter-service';
-import dayCounter from '../services/day-counter-service';
+import { DayOfWeek, Occurrence } from '../@types/day-counter';
+import { addDaystoGivenDate } from '../utils/day-counter-utils';
 
 export class PublicHolidayRule {
   private dayOfWeek: DayOfWeek = DayOfWeek.Sunday;
@@ -20,6 +20,7 @@ export class PublicHolidayRule {
     if (month < 1 || month > 12) {
       throw new Error('Invalid month');
     }
+    //validating dates for non leap year
     if (Number.isNaN(Date.parse(`2013/${month}/${day}`))) {
       throw new Error('Invalid month and date combination');
     }
@@ -45,20 +46,18 @@ export class PublicHolidayRule {
     publicHolidayRule.month = month;
     return publicHolidayRule;
   }
+
   //Returns date of the occurence of a specific day of week
   private getOccurenceOfDayInMonth(year: number, month: number, occurence: Occurrence, dayOfWeek: DayOfWeek): Date {
-    //January-0, December-11
     let firstDayOfTheMonth = new Date(`${year}/${month}/01`);
     let firstOccurenceOfDay =
       firstDayOfTheMonth.getDay() === dayOfWeek.valueOf()
         ? firstDayOfTheMonth
-        : DayCounter.addDaystoGivenDate(
+        : addDaystoGivenDate(
             firstDayOfTheMonth,
             Math.abs(this.dayOfWeek.valueOf() - firstDayOfTheMonth.getDay())
           );
-    console.log(DayCounter.addDaystoGivenDate(firstDayOfTheMonth, 7 * occurence.valueOf()));
-    return DayCounter.addDaystoGivenDate(firstDayOfTheMonth, 7 * occurence.valueOf());
-    return new Date(firstOccurenceOfDay.setUTCDate(7 * occurence.valueOf()));
+    return addDaystoGivenDate(firstOccurenceOfDay, 7 * occurence.valueOf());
   }
 
   public getPublicHolidayDateFromYear(year: number): Date {
@@ -70,11 +69,9 @@ export class PublicHolidayRule {
       let date = new Date(`${year}/${this.month}/${this.day}`);
       if (this.shouldDelay) {
         //if date falls on weekend
-        console.log(date.getDay());
-        console.log(DayOfWeek.Saturday);
         if (date.getDay() === DayOfWeek.Saturday || date.getDay() === DayOfWeek.Sunday) {
           const daysUntilMonday = (DayOfWeek.Monday - date.getDay() + 7) % 7;
-          date = dayCounter.addDaystoGivenDate(date, daysUntilMonday);
+          date = addDaystoGivenDate(date, daysUntilMonday);
         }
       }
       return date;
@@ -82,20 +79,4 @@ export class PublicHolidayRule {
   }
 }
 
-export enum DayOfWeek {
-  Sunday = 0,
-  Monday = 1,
-  Tuesday = 2,
-  Wednesday = 3,
-  Thursday = 4,
-  Friday = 5,
-  Saturday = 6,
-}
 
-export enum Occurrence {
-  First = 0,
-  Second = 1,
-  Third = 2,
-  Fourth = 3,
-  Fifth = 4,
-}

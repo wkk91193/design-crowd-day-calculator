@@ -1,5 +1,6 @@
 import DayCounter from './day-counter-service';
-import { DayOfWeek, Occurrence, PublicHolidayRule } from '../models/public-holiday-rule';
+import { PublicHolidayRule } from '../models/public-holiday-rule';
+import { DayOfWeek, Occurrence } from '../@types/day-counter';
 
 describe('DayCounter', () => {
   const dayCounter = new DayCounter();

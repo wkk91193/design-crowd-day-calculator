@@ -1,9 +1,5 @@
 import { PublicHolidayRule } from '../models/public-holiday-rule';
-
-type DateRange = {
-  startDate: Date;
-  endDate: Date;
-};
+import { isWeekDay, getNormalisedDatesForDaylightSavings, addDaystoGivenDate } from '../utils/day-counter-utils';
 
 export default class DayCounter {
   //Returns the number of weekdays between first date and second date (first and second exclusive)
@@ -13,19 +9,20 @@ export default class DayCounter {
     if (endDate < startDate) {
       return 0;
     }
-    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(startDate, endDate);
+    const normaliseDateRange = getNormalisedDatesForDaylightSavings(startDate, endDate);
     startDate = normaliseDateRange.startDate;
     endDate = normaliseDateRange.endDate;
     return this.getListOfWeekDaysBetweenTwoDates(startDate, endDate).length;
   }
 
+  //Returns the number of business day between first date and second date (first and second exclusive), given a list of public holidays
   getCountOfBusinessDaysBetweenTwoDates(firstDate: Date, secondDate: Date, publicHolidays: Date[]): number {
     let startDate = firstDate;
     let endDate = secondDate;
     if (endDate < startDate) {
       return 0;
     }
-    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(startDate, endDate);
+    const normaliseDateRange = getNormalisedDatesForDaylightSavings(startDate, endDate);
     startDate = normaliseDateRange.startDate;
     endDate = normaliseDateRange.endDate;
 
@@ -37,6 +34,7 @@ export default class DayCounter {
     return businessDaysList.length;
   }
 
+  //Returns the number of business day between first date and second date (first and second exclusive), given a list of public holidays rules
   getCountOfBusinessDaysBetweenTwoDatesForCustomRules(
     firstDate: Date,
     secondDate: Date,
@@ -48,7 +46,7 @@ export default class DayCounter {
     if (endDate < startDate) {
       return 0;
     }
-    const normaliseDateRange = this.getNormalisedDatesForDaylightSavings(startDate, endDate);
+    const normaliseDateRange = getNormalisedDatesForDaylightSavings(startDate, endDate);
     startDate = normaliseDateRange.startDate;
     endDate = normaliseDateRange.endDate;
 
@@ -72,36 +70,13 @@ export default class DayCounter {
 
   private getListOfWeekDaysBetweenTwoDates(startDate: Date, endDate: Date): number[] {
     const weekdaysList = [];
-    let tempDate = DayCounter.addDaystoGivenDate(startDate, 1);
+    let tempDate = addDaystoGivenDate(startDate, 1);
     while (tempDate < endDate) {
-      if (this.isWeekDay(tempDate)) {
+      if (isWeekDay(tempDate)) {
         weekdaysList.push(new Date(tempDate).getTime());
       }
-      tempDate = DayCounter.addDaystoGivenDate(tempDate, 1);
+      tempDate = addDaystoGivenDate(tempDate, 1);
     }
     return weekdaysList;
-  }
-
-  private isWeekDay(day: Date): boolean {
-    if (day.getDay() >= 1 && day.getDay() <= 5) {
-      return true;
-    }
-    return false;
-  }
-
-  public static addDaystoGivenDate(date: Date, numberOfDays: number): Date {
-    const newDate = new Date(date);
-    return new Date(newDate.setUTCDate(newDate.getUTCDate() + numberOfDays));
-  }
-
-  private getNormalisedDatesForDaylightSavings(startDate: Date, endDate: Date): DateRange {
-    let timezoneDiff = endDate.getTimezoneOffset() - startDate.getTimezoneOffset();
-    if (timezoneDiff != 0) {
-      // Handle daylight saving time difference between two dates.
-      startDate.setMinutes(startDate.getMinutes() + timezoneDiff);
-      endDate.setMinutes(endDate.getMinutes() + timezoneDiff);
-    }
-
-    return { startDate: startDate, endDate: endDate };
   }
 }
