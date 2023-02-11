@@ -17,8 +17,18 @@ describe('getNormalisedDateRangeForDaylightSavings()', () => {
       endDate: new Date('2013/10/14'),
     };
     const dateRangeOut = getNormalisedDateRangeForDaylightSavings(dateRange);
-    const timediff = dateRangeOut.endDate.getTime() - dateRangeOut.startDate.getTime();
-    expect(timediff).toBe(0);
+
+    const hoursdiff = dateRangeOut.endDate.getHours() - dateRangeOut.startDate.getHours();
+    expect(hoursdiff).toBe(0);
+
+    const minutesDiff = dateRangeOut.endDate.getMinutes() - dateRangeOut.startDate.getMinutes();
+    expect(minutesDiff).toBe(0);
+
+    const secondsDiff = dateRangeOut.endDate.getMinutes() - dateRangeOut.startDate.getMinutes();
+    expect(secondsDiff).toBe(0);
+
+    const milliSecondsDiff = dateRangeOut.endDate.getMilliseconds() - dateRangeOut.startDate.getMilliseconds();
+    expect(milliSecondsDiff).toBe(0);
   });
 });
 

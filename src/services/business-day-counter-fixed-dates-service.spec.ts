@@ -7,6 +7,21 @@ describe('BusinessDayCounterFixedHolidayService()', () => {
   });
 
   describe('getCountOfBusinessDays', () => {
+
+    it('should return 0 when endDate is smaller than startDate', () => {
+
+      const dateRange: DateRange = {
+        startDate: new Date('2013/10/09'),
+        endDate: new Date('2013/10/07') ,
+      };
+      const fixedDatesRule: PublicHolidayFixedDatesRules = {
+        fixedDates: [new Date('2013/12/25'), new Date('2013/12/26'), new Date('2014/01/01')],
+      };
+      expect(
+        businessDayCounterFixedHolidayService.getCountOfBusinessDays(dateRange,[fixedDatesRule] )
+      ).toBe(0);
+
+    });
     it('should return number of business days when given two business days and no holiday(s) between ', () => {
       const dateRange: DateRange = {
         startDate: new Date('2013/10/07'),
