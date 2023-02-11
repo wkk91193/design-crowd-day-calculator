@@ -1,25 +1,29 @@
-import { DateRange } from '../@types/day-counter';
+import { DateRange, DayOfWeek } from '../@types/day-counter';
 
-  
-export const isWeekDay =(day: Date): boolean => {
-    if (day.getDay() >= 1 && day.getDay() <= 5) {
-      return true;
+export const getNormalisedDateRangeForDaylightSavings = (inputDateRange:DateRange) : DateRange => {
+    const timezoneDiff = inputDateRange.endDate.getTimezoneOffset() - inputDateRange.startDate.getTimezoneOffset();
+
+    const startDate = new Date(inputDateRange.startDate);
+    const endDate = new Date (inputDateRange.endDate);
+
+    if (timezoneDiff != 0) {
+      // Handle daylight saving time difference between two dates.
+       startDate.setMinutes(startDate.getMinutes() + timezoneDiff);
+       endDate.setMinutes(endDate.getMinutes() + timezoneDiff)
     }
-    return false;
+
+    return { startDate: startDate, endDate: endDate };
   }
 
   export const addDaystoGivenDate = (date: Date, numberOfDays: number): Date => {
     const newDate = new Date(date);
-    return new Date(newDate.setUTCDate(newDate.getUTCDate() + numberOfDays));
+    newDate.setUTCDate(newDate.getUTCDate() + numberOfDays);
+    return newDate;
  }
 
- export const getNormalisedDatesForDaylightSavings = (startDate: Date, endDate: Date) : DateRange => {
-    let timezoneDiff = endDate.getTimezoneOffset() - startDate.getTimezoneOffset();
-    if (timezoneDiff != 0) {
-      // Handle daylight saving time difference between two dates.
-      startDate.setMinutes(startDate.getMinutes() + timezoneDiff);
-      endDate.setMinutes(endDate.getMinutes() + timezoneDiff);
+ export const isWeekDay = (day: Date): boolean => {
+    if (day.getDay() >= DayOfWeek.Monday && day.getDay() <= DayOfWeek.Friday) {
+      return true;
     }
-
-    return { startDate: startDate, endDate: endDate };
+    return false;
   }

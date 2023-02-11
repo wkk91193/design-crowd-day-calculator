@@ -7,7 +7,8 @@
     "test": "jest",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --fix --ext .ts"
   },
   "keywords": [],
   "author": "",
