@@ -3,6 +3,10 @@ import { addDaystoGivenDate, getNormalisedDateRangeForDaylightSavings, isWeekDay
 import WeekDayCounter from './weekday-counter';
 
 export default class WeekDayCounterService implements WeekDayCounter {
+  /**
+   * Gets the number of week days for a given date range
+   *
+   */
   getCountOfWeekDays(dateRange: DateRange): number {
     if (dateRange.endDate < dateRange.startDate) {
       return 0;

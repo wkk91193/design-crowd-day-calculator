@@ -4,6 +4,10 @@ import BusinessDayCounter from './business-day-counter';
 import WeekDayCounterService from './weekday-counter-service';
 
 export default class BusinessDayCounterAlwaysOnSameDateService implements BusinessDayCounter {
+  /**
+   * Gets the number of business days for a given date range, rule: when given a fixed, when falls on a weekend,delayed to next Monday
+   *
+   */
   getCountOfBusinessDays(dateRange: DateRange, publicHolidayRules: PublicHolidayRules[]): number {
     if (dateRange.endDate < dateRange.startDate) {
       return 0;
@@ -24,10 +28,7 @@ export default class BusinessDayCounterAlwaysOnSameDateService implements Busine
         (publicHolidayRule) => {
           //get holiday list for each year
           let date = new Date(`${startDate.getFullYear()}/${publicHolidayRule.month}/${publicHolidayRule.day}`);
-          if (
-            publicHolidayRule.shouldDelay &&
-            (date.getDay() === DayOfWeek.Saturday || date.getDay() === DayOfWeek.Sunday)
-          ) {
+          if (this.shouldDelayIfFallsonAWeekend(publicHolidayRule.shouldDelay, date.getDay())) {
             const daysUntilMonday = (DayOfWeek.Monday - date.getDay() + 7) % 7;
             date = addDaystoGivenDate(date, daysUntilMonday);
           }
@@ -41,5 +42,11 @@ export default class BusinessDayCounterAlwaysOnSameDateService implements Busine
       return !publicHolidaysinMilliseconds.includes(weekDay);
     });
     return businessDaysList.length;
+  }
+
+  private shouldDelayIfFallsonAWeekend(shouldDelay: boolean, day: number): boolean {
+    if (shouldDelay && (day === DayOfWeek.Saturday || day === DayOfWeek.Sunday)) return true;
+
+    return false;
   }
 }

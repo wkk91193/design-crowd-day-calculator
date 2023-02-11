@@ -4,6 +4,11 @@ import BusinessDayCounter from './business-day-counter';
 import WeekDayCounterService from './weekday-counter-service';
 
 export default class BusinessDayCounterOnCertainOccurrenceService implements BusinessDayCounter {
+  /**
+   * Gets the number of business days for a given date range, rule: when given a day of the week and occurrence
+   *
+   */
+
   getCountOfBusinessDays(dateRange: DateRange, publicHolidayRules: PublicHolidayRules[]): number {
     if (dateRange.endDate < dateRange.startDate) {
       return 0;
