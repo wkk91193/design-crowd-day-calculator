@@ -28,7 +28,7 @@ export default class BusinessDayCounterAlwaysOnSameDateService implements Busine
         (publicHolidayRule) => {
           //get holiday list for each year
           let date = new Date(`${startDate.getFullYear()}/${publicHolidayRule.month}/${publicHolidayRule.day}`);
-          if (this.shouldDelayIfFallsonAWeekend(publicHolidayRule.shouldDelay, date.getDay())) {
+          if (this.shouldDelayIfFallsOnAWeekend(publicHolidayRule.shouldDelay, date.getDay())) {
             const daysUntilMonday = (DayOfWeek.Monday - date.getDay() + 7) % 7;
             date = addDaystoGivenDate(date, daysUntilMonday);
           }
@@ -44,7 +44,7 @@ export default class BusinessDayCounterAlwaysOnSameDateService implements Busine
     return businessDaysList.length;
   }
 
-  private shouldDelayIfFallsonAWeekend(shouldDelay: boolean, day: number): boolean {
+  private shouldDelayIfFallsOnAWeekend(shouldDelay: boolean, day: number): boolean {
     if (shouldDelay && (day === DayOfWeek.Saturday || day === DayOfWeek.Sunday)) return true;
 
     return false;

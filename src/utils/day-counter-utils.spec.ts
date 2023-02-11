@@ -1,0 +1,40 @@
+import { DateRange } from '../@types/day-counter';
+import { addDaystoGivenDate, getNormalisedDateRangeForDaylightSavings, isWeekDay } from './day-counter-utils';
+describe('getNormalisedDateRangeForDaylightSavings()', () => {
+  it('should throw an Error when endDate is smaller than the startDate for the range', () => {
+    const dateRange: DateRange = {
+      startDate: new Date('2013/10/14'),
+      endDate: new Date('2013/10/05'),
+    };
+    expect(() => {
+      getNormalisedDateRangeForDaylightSavings(dateRange);
+    }).toThrow(new Error('endDate cannot be earlier than the startDate'));
+  });
+
+  it('should return normalised times for date range', () => {
+    const dateRange: DateRange = {
+      startDate: new Date('2013/10/05'),
+      endDate: new Date('2013/10/14'),
+    };
+    const dateRangeOut = getNormalisedDateRangeForDaylightSavings(dateRange);
+    const timediff = dateRangeOut.endDate.getTime() - dateRangeOut.startDate.getTime();
+    expect(timediff).toBe(0);
+  });
+});
+
+describe('addDaystoGivenDate()', () => {
+  it('should add given days to given date', () => {
+    const newDate = addDaystoGivenDate(new Date('2023/02/12'), 1);
+    expect(newDate.getTime()).toBe(new Date('2023/02/13').getTime());
+  });
+});
+
+describe('isWeekDay', () => {
+  it('should return true for week days', () => {
+    expect(isWeekDay(new Date('2023/02/10'))).toBe(true);
+  });
+
+  it('should return false for weekend', () => {
+    expect(isWeekDay(new Date('2023/02/12'))).toBe(false);
+  });
+});

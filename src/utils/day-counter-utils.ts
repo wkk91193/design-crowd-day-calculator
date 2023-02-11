@@ -1,6 +1,9 @@
 import { DateRange, DayOfWeek } from '../@types/day-counter';
 
 export const getNormalisedDateRangeForDaylightSavings = (inputDateRange:DateRange) : DateRange => {
+    if(inputDateRange.endDate < inputDateRange.startDate){
+        throw new Error('endDate cannot be earlier than the startDate');
+    }
     const timezoneDiff = inputDateRange.endDate.getTimezoneOffset() - inputDateRange.startDate.getTimezoneOffset();
 
     const startDate = new Date(inputDateRange.startDate);
