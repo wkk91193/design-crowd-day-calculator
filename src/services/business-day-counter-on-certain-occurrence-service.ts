@@ -1,5 +1,5 @@
 import { DateRange, PublicHolidayRules, PublicHolidaysOnCertainOccurrencesRules } from '../@types/day-counter';
-import { addDaystoGivenDate, getNormalisedDateRangeForDaylightSavings } from '../utils/day-counter-utils';
+import { addDaysToGivenDate, getNormalisedTimesForDateRange } from '../utils/day-counter-utils';
 import BusinessDayCounter from './business-day-counter';
 import WeekDayCounterService from './weekday-counter-service';
 
@@ -13,7 +13,7 @@ export default class BusinessDayCounterOnCertainOccurrenceService implements Bus
     if (dateRange.endDate < dateRange.startDate) {
       return 0;
     }
-    const normalisedDateRange = getNormalisedDateRangeForDaylightSavings(dateRange);
+    const normalisedDateRange = getNormalisedTimesForDateRange(dateRange);
 
     const weekDayCounterService = new WeekDayCounterService();
 
@@ -32,11 +32,11 @@ export default class BusinessDayCounterOnCertainOccurrenceService implements Bus
           const firstOccurenceOfDay =
             firstDateOfTheMonth.getDay() === publicHolidayRule.dayOfWeek.valueOf()
               ? firstDateOfTheMonth
-              : addDaystoGivenDate(
+              : addDaysToGivenDate(
                   firstDateOfTheMonth,
                   Math.abs(publicHolidayRule.dayOfWeek.valueOf() - firstDateOfTheMonth.getDay())
                 );
-          const occurence = addDaystoGivenDate(firstOccurenceOfDay, 7 * publicHolidayRule.occurrence.valueOf());
+          const occurence = addDaysToGivenDate(firstOccurenceOfDay, 7 * publicHolidayRule.occurrence.valueOf());
           return occurence.getTime();
         }
       );

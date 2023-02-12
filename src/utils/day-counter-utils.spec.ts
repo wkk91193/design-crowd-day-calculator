@@ -1,5 +1,5 @@
 import { DateRange } from '../@types/day-counter';
-import { addDaystoGivenDate, getNormalisedDateRangeForDaylightSavings, isWeekDay } from './day-counter-utils';
+import { addDaysToGivenDate, getNormalisedTimesForDateRange, isWeekDay } from './day-counter-utils';
 describe('getNormalisedDateRangeForDaylightSavings()', () => {
   it('should throw an Error when endDate is smaller than the startDate for the range', () => {
     const dateRange: DateRange = {
@@ -7,7 +7,7 @@ describe('getNormalisedDateRangeForDaylightSavings()', () => {
       endDate: new Date('2013/10/05'),
     };
     expect(() => {
-      getNormalisedDateRangeForDaylightSavings(dateRange);
+      getNormalisedTimesForDateRange(dateRange);
     }).toThrow(new Error('endDate cannot be earlier than the startDate'));
   });
 
@@ -16,7 +16,7 @@ describe('getNormalisedDateRangeForDaylightSavings()', () => {
       startDate: new Date('2013/10/05'),
       endDate: new Date('2013/10/14'),
     };
-    const dateRangeOut = getNormalisedDateRangeForDaylightSavings(dateRange);
+    const dateRangeOut = getNormalisedTimesForDateRange(dateRange);
 
     const hoursdiff = dateRangeOut.endDate.getHours() - dateRangeOut.startDate.getHours();
     expect(hoursdiff).toBe(0);
@@ -34,7 +34,7 @@ describe('getNormalisedDateRangeForDaylightSavings()', () => {
 
 describe('addDaystoGivenDate()', () => {
   it('should add given days to given date', () => {
-    const newDate = addDaystoGivenDate(new Date('2023/02/12'), 1);
+    const newDate = addDaysToGivenDate(new Date('2023/02/12'), 1);
     expect(newDate.getTime()).toBe(new Date('2023/02/13').getTime());
   });
 });

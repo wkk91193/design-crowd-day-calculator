@@ -9,7 +9,7 @@ export interface PublicHolidayCustomDatesRules extends PublicHolidayRules {
 
 export interface PublicHolidayAlwaysOnSameDateRules extends PublicHolidayCustomDatesRules {
   day: number;
-  shouldDelay: boolean;
+  shouldDelayIfFallsOnAWeekend: boolean;
 }
 
 export interface PublicHolidaysOnCertainOccurrencesRules extends PublicHolidayCustomDatesRules {

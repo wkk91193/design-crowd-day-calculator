@@ -1,5 +1,5 @@
 import { DateRange } from '../@types/day-counter';
-import { addDaystoGivenDate, getNormalisedDateRangeForDaylightSavings, isWeekDay } from '../utils/day-counter-utils';
+import { addDaysToGivenDate, getNormalisedTimesForDateRange, isWeekDay } from '../utils/day-counter-utils';
 import WeekDayCounter from './weekday-counter';
 
 export default class WeekDayCounterService implements WeekDayCounter {
@@ -11,18 +11,18 @@ export default class WeekDayCounterService implements WeekDayCounter {
     if (dateRange.endDate < dateRange.startDate) {
       return 0;
     }
-    const normalisedDateRange = getNormalisedDateRangeForDaylightSavings(dateRange);
+    const normalisedDateRange = getNormalisedTimesForDateRange(dateRange);
     return this.getListOfWeekDaysinMillisecondsBetweenDateRange(normalisedDateRange).length;
   }
 
   getListOfWeekDaysinMillisecondsBetweenDateRange(dateRange: DateRange): number[] {
     const weekdaysinMillisecondsList = [];
-    let tempDate = addDaystoGivenDate(dateRange.startDate, 1);
+    let tempDate = addDaysToGivenDate(dateRange.startDate, 1);
     while (tempDate < dateRange.endDate) {
       if (isWeekDay(tempDate)) {
         weekdaysinMillisecondsList.push(new Date(tempDate).getTime());
       }
-      tempDate = addDaystoGivenDate(tempDate, 1);
+      tempDate = addDaysToGivenDate(tempDate, 1);
     }
     return weekdaysinMillisecondsList;
   }

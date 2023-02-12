@@ -15,7 +15,7 @@ describe('BusinessDayCounterAlwaysOnSameDateService()', () => {
       const alwaysOnSameDateRule: PublicHolidayAlwaysOnSameDateRules = {
         month: 6,
         day: 20,
-        shouldDelay: false,
+        shouldDelayIfFallsOnAWeekend: false,
       };
       expect(businessDayCounterAlwaysOnSameDateService.getCountOfBusinessDays(dateRange, [alwaysOnSameDateRule])).toBe(
         0
@@ -30,7 +30,7 @@ describe('BusinessDayCounterAlwaysOnSameDateService()', () => {
       const alwaysOnSameDateRule: PublicHolidayAlwaysOnSameDateRules = {
         month: 6,
         day: 20,
-        shouldDelay: false,
+        shouldDelayIfFallsOnAWeekend: false,
       };
       expect(businessDayCounterAlwaysOnSameDateService.getCountOfBusinessDays(dateRange, [alwaysOnSameDateRule])).toBe(
         9
@@ -46,7 +46,7 @@ describe('BusinessDayCounterAlwaysOnSameDateService()', () => {
       const alwaysOnSameDateRule: PublicHolidayAlwaysOnSameDateRules = {
         month: 10,
         day: 8,
-        shouldDelay: false,
+        shouldDelayIfFallsOnAWeekend: false,
       };
       expect(businessDayCounterAlwaysOnSameDateService.getCountOfBusinessDays(dateRange, [alwaysOnSameDateRule])).toBe(
         0
@@ -62,7 +62,7 @@ describe('BusinessDayCounterAlwaysOnSameDateService()', () => {
       const alwaysOnSameDateRule: PublicHolidayAlwaysOnSameDateRules = {
         month: 6,
         day: 20,
-        shouldDelay: true,
+        shouldDelayIfFallsOnAWeekend: true,
       };
       expect(businessDayCounterAlwaysOnSameDateService.getCountOfBusinessDays(dateRange, [alwaysOnSameDateRule])).toBe(
         8
@@ -78,7 +78,7 @@ describe('BusinessDayCounterAlwaysOnSameDateService()', () => {
       const alwaysOnSameDateRule: PublicHolidayAlwaysOnSameDateRules = {
         month: 6,
         day: 22,
-        shouldDelay: true,
+        shouldDelayIfFallsOnAWeekend: true,
       };
       expect(businessDayCounterAlwaysOnSameDateService.getCountOfBusinessDays(dateRange, [alwaysOnSameDateRule])).toBe(
         8

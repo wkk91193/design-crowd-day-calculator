@@ -1,5 +1,5 @@
 import { DateRange, PublicHolidayFixedDatesRules, PublicHolidayRules } from '../@types/day-counter';
-import { getNormalisedDateRangeForDaylightSavings } from '../utils/day-counter-utils';
+import { getNormalisedTimesForDateRange } from '../utils/day-counter-utils';
 import BusinessDayCounter from './business-day-counter';
 import WeekDayCounterService from './weekday-counter-service';
 
@@ -12,7 +12,7 @@ export default class BusinessDayCounterFixedHolidayService implements BusinessDa
     if (dateRange.endDate < dateRange.startDate) {
       return 0;
     }
-    const normalisedDateRange = getNormalisedDateRangeForDaylightSavings(dateRange);
+    const normalisedDateRange = getNormalisedTimesForDateRange(dateRange);
 
     const weekDayCounterService = new WeekDayCounterService();
 

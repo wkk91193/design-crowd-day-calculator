@@ -1,5 +1,5 @@
 import { DateRange, DayOfWeek, PublicHolidayAlwaysOnSameDateRules, PublicHolidayRules } from '../@types/day-counter';
-import { addDaystoGivenDate, getNormalisedDateRangeForDaylightSavings } from '../utils/day-counter-utils';
+import { addDaysToGivenDate, getNormalisedTimesForDateRange } from '../utils/day-counter-utils';
 import BusinessDayCounter from './business-day-counter';
 import WeekDayCounterService from './weekday-counter-service';
 
@@ -12,7 +12,7 @@ export default class BusinessDayCounterAlwaysOnSameDateService implements Busine
     if (dateRange.endDate < dateRange.startDate) {
       return 0;
     }
-    const normalisedDateRange = getNormalisedDateRangeForDaylightSavings(dateRange);
+    const normalisedDateRange = getNormalisedTimesForDateRange(dateRange);
 
     const weekDayCounterService = new WeekDayCounterService();
 
@@ -28,9 +28,9 @@ export default class BusinessDayCounterAlwaysOnSameDateService implements Busine
         (publicHolidayRule) => {
           //get holiday list for each year
           let date = new Date(`${startDate.getFullYear()}/${publicHolidayRule.month}/${publicHolidayRule.day}`);
-          if (this.shouldDelayIfFallsOnAWeekend(publicHolidayRule.shouldDelay, date.getDay())) {
+          if (this.shouldDelayIfFallsOnAWeekend(publicHolidayRule.shouldDelayIfFallsOnAWeekend, date.getDay())) {
             const daysUntilMonday = (DayOfWeek.Monday - date.getDay() + 7) % 7;
-            date = addDaystoGivenDate(date, daysUntilMonday);
+            date = addDaysToGivenDate(date, daysUntilMonday);
           }
           return date.getTime();
         }
@@ -44,8 +44,8 @@ export default class BusinessDayCounterAlwaysOnSameDateService implements Busine
     return businessDaysList.length;
   }
 
-  private shouldDelayIfFallsOnAWeekend(shouldDelay: boolean, day: number): boolean {
-    if (shouldDelay && (day === DayOfWeek.Saturday || day === DayOfWeek.Sunday)) return true;
+  private shouldDelayIfFallsOnAWeekend(shouldDelayIfFallsOnAWeekend: boolean, day: number): boolean {
+    if (shouldDelayIfFallsOnAWeekend && (day === DayOfWeek.Saturday || day === DayOfWeek.Sunday)) return true;
 
     return false;
   }
